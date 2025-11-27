@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Harvest Helper{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              leaf: '#6BB42F',
+              soil: '#7B4B28',
+              sunset: '#D97A2B',
+            },
+          },
+        },
+      };
+    </script>
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body class="min-h-screen flex flex-col bg-stone-50 text-soil">
+    <header class="bg-white shadow">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div class="flex items-center gap-3">
+          <a href="{% url 'home' %}" class="flex items-center gap-3">
+            <div class="w-20">
+              <img src="{% static 'images/logo.png.png' %}" alt="Harvest Helper Logo" class="w-full h-auto">
+            </div>
+          </a>
+        </div>
+        <form action="{% url 'product_list' %}" method="get" class="flex-1 md:ml-8">
+          <div class="flex bg-gray-100 rounded-full overflow-hidden">
+            <input name="q" type="text" placeholder="Search fruits, veggies, farm goods..." value="{{ request.GET.q }}" class="flex-1 px-4 py-2 bg-transparent focus:outline-none" />
+            <button class="bg-leaf text-white px-4">Search</button>
+          </div>
+        </form>
+        <nav class="flex items-center gap-4 font-semibold">
+          {% if user.is_authenticated %}
+            <a href="{% url 'order_list' %}" class="text-sm text-soil hover:text-sunset transition">Orders</a>
+            {% if user_profile and user_profile.is_seller %}
+              <a href="{% url 'seller_dashboard' %}" class="text-sm text-soil hover:text-sunset transition">Seller</a>
+            {% endif %}
+            <a href="{% url 'view_cart' %}" class="relative text-sm text-soil hover:text-sunset transition">
+              Cart
+              <span class="ml-1 bg-sunset text-white text-xs px-2 py-0.5 rounded-full">{{ cart_item_count }}</span>
+            </a>
+            <form action="{% url 'logout' %}" method="post" class="inline">
+              {% csrf_token %}
+              <button type="submit" class="px-4 py-2 bg-soil text-white rounded-full text-sm hover:bg-soil/90 transition-colors">
+                Logout
+              </button>
+            </form>
+          {% else %}
+            <a href="{% url 'login' %}" class="text-sm text-soil hover:text-sunset transition">Login</a>
+            <a href="{% url 'signup' %}" class="px-4 py-2 bg-leaf text-white rounded-full text-sm">Sign up</a>
+          {% endif %}
+        </nav>
+      </div>
+      <div class="bg-soil text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex overflow-x-auto gap-6 py-2 text-sm uppercase tracking-wide">
+          <a href="{% url 'product_list' %}" class="hover:text-sunset">All</a>
+          {% for category in nav_categories %}
+            <a href="{% url 'product_list' %}?category={{ category.slug }}" class="hover:text-sunset">{{ category.name }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    </header>
+
+    {% if messages %}
+      <div class="max-w-4xl mx-auto mt-4 space-y-2 px-4">
+        {% for message in messages %}
+          <div class="rounded-lg px-4 py-3 text-white {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}bg-leaf{% else %}bg-sunset{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-soil text-white mt-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid gap-4 md:grid-cols-3 text-sm">
+        <div>
+          <p class="font-semibold text-lg">Harvest Helper</p>
+          <p class="text-gray-300">Connecting farmers and families through sustainable online markets.</p>
+        </div>
+        <div>
+          <p class="font-semibold">Contact</p>
+          <p>Email: hello@harvesthelper.com</p>
+          <p>Phone: +63 900 000 0000</p>
+        </div>
+        <div class="space-y-1">
+          <a href="#" class="block hover:text-sunset">About</a>
+          <a href="#" class="block hover:text-sunset">Privacy</a>
+          <a href="#" class="block hover:text-sunset">Terms</a>
+        </div>
+      </div>
+      <div class="bg-black/20 text-center text-xs py-3">&copy; {% now 'Y' %} Harvest Helper. All rights reserved.</div>
+    </footer>
+    {% block extra_scripts %}{% endblock %}
+  </body>
+</html>
+

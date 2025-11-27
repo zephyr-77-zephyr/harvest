@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Shop | Harvest Helper{% endblock %}
+
+{% block content %}
+  <div class="flex flex-col gap-6 lg:flex-row">
+    <aside class="lg:w-64 space-y-6 bg-white rounded-2xl shadow p-6 h-fit">
+      <div>
+        <p class="font-semibold text-soil mb-2">Categories</p>
+        <ul class="space-y-2 text-sm">
+          <li>
+            <a href="{% url 'product_list' %}" class="{% if not active_category %}text-sunset font-semibold{% endif %}">All products</a>
+          </li>
+          {% for category in nav_categories %}
+            <li>
+              <a href="{% url 'product_list' %}?category={{ category.slug }}" class="{% if active_category == category.slug %}text-sunset font-semibold{% endif %}">{{ category.name }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <form method="get" class="space-y-4">
+        <input type="hidden" name="category" value="{{ active_category }}">
+        <div>
+          <label class="text-sm text-gray-500">Price from</label>
+          <input name="min_price" type="number" step="0.01" class="mt-1 w-full rounded-xl border-gray-200" value="{{ request.GET.min_price }}">
+        </div>
+        <div>
+          <label class="text-sm text-gray-500">Price to</label>
+          <input name="max_price" type="number" step="0.01" class="mt-1 w-full rounded-xl border-gray-200" value="{{ request.GET.max_price }}">
+        </div>
+        <button class="w-full px-4 py-2 bg-leaf text-white rounded-full font-semibold">Apply filters</button>
+      </form>
+    </aside>
+    <section class="flex-1">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="text-sm text-gray-500">Showing {{ products|length }} items</p>
+          {% if query %}
+            <p class="text-xs text-gray-400">Searching for “{{ query }}”</p>
+          {% endif %}
+        </div>
+        <a href="{% url 'home' %}" class="text-sm text-sunset">Back to home</a>
+      </div>
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {% for product in products %}
+          {% include "products/partials/product_card.html" %}
+        {% empty %}
+          <p class="col-span-full text-gray-500">No products match your filters.</p>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+{% endblock %}
+

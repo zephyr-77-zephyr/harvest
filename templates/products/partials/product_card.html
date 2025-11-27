@@ -1,0 +1,18 @@
+<article class="bg-white rounded-2xl shadow hover:shadow-lg transition flex flex-col overflow-hidden">
+  {% if product.image %}
+    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="h-40 w-full object-cover" />
+  {% else %}
+    <div class="h-40 bg-leaf/10 flex items-center justify-center text-leaf font-semibold">Harvest Helper</div>
+  {% endif %}
+  <div class="p-4 flex-1 flex flex-col">
+    <p class="text-xs uppercase text-gray-400">{{ product.category.name }}</p>
+    <h3 class="text-lg font-bold text-soil">{{ product.name }}</h3>
+    <p class="text-sunset font-semibold mt-2">₱{{ product.price }}</p>
+    <p class="text-xs text-gray-500 mt-1">{{ product.stock }} in stock</p>
+    <div class="flex items-center gap-1 text-sm text-yellow-500 mt-auto">
+      ⭐ {{ product.avg_rating|floatformat:1 }} / 5
+    </div>
+    <a href="{% url 'product_detail' slug=product.slug %}" class="mt-4 inline-flex justify-center items-center px-4 py-2 bg-leaf text-white rounded-full text-sm font-semibold">View details</a>
+  </div>
+</article>
+

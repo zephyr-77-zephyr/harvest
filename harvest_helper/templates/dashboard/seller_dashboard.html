@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Seller Dashboard | Harvest Helper{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+  <h1 class="text-3xl font-bold text-soil mb-6">Seller dashboard</h1>
+  <div class="grid gap-6 md:grid-cols-3">
+    <div class="bg-white rounded-3xl shadow p-6">
+      <p class="text-sm text-gray-500">Products</p>
+      <p class="text-3xl font-bold text-soil">{{ stats.total_products }}</p>
+    </div>
+    <div class="bg-white rounded-3xl shadow p-6">
+      <p class="text-sm text-gray-500">Orders</p>
+      <p class="text-3xl font-bold text-soil">{{ stats.total_orders }}</p>
+    </div>
+    <div class="bg-white rounded-3xl shadow p-6">
+      <p class="text-sm text-gray-500">Revenue</p>
+      <p class="text-3xl font-bold text-sunset">₱{{ stats.total_revenue }}</p>
+    </div>
+  </div>
+  <div class="grid gap-6 lg:grid-cols-2 mt-8">
+    <section class="bg-white rounded-3xl shadow p-6">
+      <h2 class="text-xl font-semibold text-soil mb-4">Your inventory</h2>
+      <div class="space-y-3 max-h-96 overflow-y-auto">
+        {% for product in products %}
+          <div class="border border-gray-100 rounded-2xl p-4">
+            <p class="font-semibold text-soil">{{ product.name }}</p>
+            <p class="text-sm text-gray-500">Stock: {{ product.stock }} · ₱{{ product.price }}</p>
+          </div>
+        {% empty %}
+          <p class="text-gray-500">No products yet.</p>
+        {% endfor %}
+      </div>
+    </section>
+    <section class="bg-white rounded-3xl shadow p-6">
+      <h2 class="text-xl font-semibold text-soil mb-4">Add a product</h2>
+      <form method="post" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+          <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-red-700">
+                  {{ form.non_field_errors|join:" " }}
+                </p>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Category Field -->
+        <div class="space-y-2">
+          <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-gray-700">
+            Category <span class="text-red-500">*</span>
+          </label>
+          <div class="mt-1">
+            {{ form.category }}
+          </div>
+          {% if form.category.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.category.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+        
+        <!-- Name Field -->
+        <div class="space-y-2">
+          <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700">
+            Product Name <span class="text-red-500">*</span>
+          </label>
+          <div class="mt-1">
+            {{ form.name }}
+          </div>
+          {% if form.name.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.name.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+        
+        <!-- Description Field -->
+        <div class="space-y-2">
+          <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700">
+            Description
+          </label>
+          <div class="mt-1">
+            {{ form.description }}
+          </div>
+          {% if form.description.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.description.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+        
+        <!-- Price and Stock Fields in a grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Price Field -->
+          <div class="space-y-2">
+            <label for="{{ form.price.id_for_label }}" class="block text-sm font-medium text-gray-700">
+              Price (₱) <span class="text-red-500">*</span>
+            </label>
+            <div class="mt-1">
+              {{ form.price }}
+            </div>
+            {% if form.price.errors %}
+              <p class="mt-1 text-sm text-red-600">{{ form.price.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+          
+          <!-- Stock Field -->
+          <div class="space-y-2">
+            <label for="{{ form.stock.id_for_label }}" class="block text-sm font-medium text-gray-700">
+              Stock <span class="text-red-500">*</span>
+            </label>
+            <div class="mt-1">
+              {{ form.stock }}
+            </div>
+            {% if form.stock.errors %}
+              <p class="mt-1 text-sm text-red-600">{{ form.stock.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+        </div>
+        
+        <!-- Image Field -->
+        <div class="space-y-2">
+          <label for="{{ form.image.id_for_label }}" class="block text-sm font-medium text-gray-700">
+            Product Image
+          </label>
+          <div class="mt-1">
+            {{ form.image }}
+          </div>
+          {% if form.image.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.image.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+        
+        <!-- Featured Checkbox -->
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            {{ form.is_featured }}
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="{{ form.is_featured.id_for_label }}" class="font-medium text-gray-700">
+              Feature this product on the homepage
+            </label>
+            <p class="text-gray-500">This product will be displayed on the homepage carousel</p>
+          </div>
+          {% if form.is_featured.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.is_featured.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+        
+        <div class="pt-4">
+          <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-leaf hover:bg-leaf-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-leaf">
+            Save Product
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+  <section class="mt-8 bg-white rounded-3xl shadow p-6">
+    <h2 class="text-xl font-semibold text-soil mb-4">Recent orders</h2>
+    <div class="space-y-3 max-h-80 overflow-y-auto">
+      {% for order in orders %}
+        <div class="border border-gray-100 rounded-2xl p-4">
+          <p class="font-semibold text-soil">Order #{{ order.id }}</p>
+          <p class="text-sm text-gray-500">{{ order.created_at|date:"M d, Y" }} · {{ order.get_status_display }}</p>
+          <p class="text-sunset font-semibold">₱{{ order.total }}</p>
+        </div>
+      {% empty %}
+        <p class="text-gray-500">No orders yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}
+

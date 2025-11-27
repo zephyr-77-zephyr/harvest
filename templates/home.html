@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Harvest Helper | Farm Fresh Marketplace{% endblock %}
+
+{% block content %}
+  <section class="grid gap-8 md:grid-cols-2">
+    <div class="space-y-6">
+      <h1 class="text-4xl font-extrabold text-soil leading-tight">
+        Fresh fruits and vegetables delivered straight from local growers.
+      </h1>
+      <p class="text-lg text-gray-600">
+        Harvest Helper brings Lazada-level convenience with the warmth of community markets. Support farmers, discover seasonal picks, and track orders easily.
+      </p>
+      <div class="flex gap-4">
+        <a href="{% url 'product_list' %}" class="px-6 py-3 bg-leaf text-white rounded-full font-semibold">Shop now</a>
+        {% if not user.is_authenticated %}
+          <a href="{% url 'signup' %}" class="px-6 py-3 border-2 border-soil text-soil rounded-full font-semibold">Become a member</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="bg-white rounded-3xl shadow-xl p-6 grid gap-4">
+      <p class="text-sm font-semibold uppercase text-gray-500">Top categories</p>
+      <div class="grid grid-cols-2 gap-4">
+        {% for category in nav_categories %}
+          <a href="{% url 'product_list' %}?category={{ category.slug }}" class="rounded-2xl border border-gray-200 p-4 hover:border-leaf transition">
+            <p class="text-soil font-bold">{{ category.name }}</p>
+            <p class="text-gray-500 text-sm">Shop {{ category.products.count }} items</p>
+          </a>
+        {% empty %}
+          <p>No categories yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-12">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-2xl font-bold text-soil">Featured harvests</h2>
+      <a href="{% url 'product_list' %}" class="text-sunset font-semibold">View all</a>
+    </div>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {% for product in featured_products %}
+        {% include "products/partials/product_card.html" %}
+      {% empty %}
+        <p class="col-span-full text-gray-500">No featured products yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="text-2xl font-bold text-soil mb-4">Fresh arrivals</h2>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {% for product in latest_products %}
+        {% include "products/partials/product_card.html" %}
+      {% empty %}
+        <p class="col-span-full text-gray-500">No products yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}
+

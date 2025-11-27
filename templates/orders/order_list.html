@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}My Orders | Harvest Helper{% endblock %}
+
+{% block content %}
+  <h1 class="text-3xl font-bold text-soil mb-4">Order history</h1>
+  <div class="space-y-4">
+    {% for order in orders %}
+      <article class="bg-white rounded-3xl shadow p-6">
+        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p class="text-sm text-gray-500">Order #{{ order.id }}</p>
+            <p class="font-semibold text-soil">{{ order.created_at|date:"M d, Y" }}</p>
+          </div>
+          <span class="px-3 py-1 text-xs rounded-full bg-leaf/10 text-leaf uppercase">{{ order.get_status_display }}</span>
+        </div>
+        <ul class="mt-4 space-y-2 text-sm text-gray-600">
+          {% for item in order.items.all %}
+            <li>{{ item.product }} × {{ item.quantity }} — ₱{{ item.subtotal }}</li>
+          {% endfor %}
+        </ul>
+        <p class="mt-4 font-bold text-sunset">Total: ₱{{ order.total }}</p>
+      </article>
+    {% empty %}
+      <p class="text-gray-500">You have no orders yet.</p>
+    {% endfor %}
+  </div>
+{% endblock %}
+

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} | Harvest Helper{% endblock %}
+
+{% block content %}
+  <div class="grid gap-10 lg:grid-cols-2">
+    <div class="bg-white rounded-3xl shadow overflow-hidden">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-96 object-cover" />
+      {% else %}
+        <div class="w-full h-96 bg-leaf/10 flex items-center justify-center text-leaf font-bold text-2xl">Harvest Helper</div>
+      {% endif %}
+    </div>
+    <div class="space-y-6">
+      <div>
+        <p class="uppercase text-sm text-gray-400">{{ product.category.name }}</p>
+        <h1 class="text-3xl font-bold text-soil">{{ product.name }}</h1>
+      </div>
+      <p class="text-sunset text-3xl font-extrabold">₱{{ product.price }}</p>
+      <p class="text-gray-600">{{ product.description }}</p>
+      <p class="text-sm text-gray-500">Sold by <span class="font-semibold text-soil">{{ product.seller.get_full_name|default:product.seller.username }}</span></p>
+      <p class="text-sm text-gray-500">{{ product.stock }} units available</p>
+      <form method="post" action="{% if user.is_authenticated %}{% url 'add_to_cart' slug=product.slug %}{% else %}{% url 'login' %}?next={% url 'product_detail' slug=product.slug %}{% endif %}">
+        {% csrf_token %}
+        <button type="submit" class="px-6 py-3 bg-leaf text-white rounded-full font-semibold w-full sm:w-auto">
+          {% if user.is_authenticated %}
+            Add to cart
+          {% else %}
+            Login to Purchase
+          {% endif %}
+        </button>
+        {% if not user.is_authenticated %}
+          <p class="text-sm text-gray-500 mt-2">Please log in or sign up to add items to your cart.</p>
+          <div class="mt-2 space-x-2">
+            <a href="{% url 'signup' %}?next={% url 'product_detail' slug=product.slug %}" 
+               class="text-sm text-leaf hover:underline">Create an account</a>
+            <span class="text-gray-400">•</span>
+            <a href="{% url 'login' %}?next={% url 'product_detail' slug=product.slug %}" 
+               class="text-sm text-leaf hover:underline">Already have an account? Log in</a>
+          </div>
+        {% endif %}
+      </form>
+      <div>
+        <p class="font-semibold text-soil mb-2">Ratings & reviews ({{ reviews|length }})</p>
+        <div class="space-y-4">
+          {% for review in reviews %}
+            <div class="bg-white rounded-2xl shadow p-4">
+              <p class="text-yellow-500 font-semibold">⭐ {{ review.rating }}/5</p>
+              <p class="text-sm text-gray-500">by {{ review.user.get_full_name|default:review.user.username }} · {{ review.created_at|date:"M d, Y" }}</p>
+              <p class="text-gray-600">{{ review.comment }}</p>
+            </div>
+          {% empty %}
+            <p class="text-gray-500">No reviews yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl shadow p-4">
+        <p class="font-semibold mb-2">Leave a review</p>
+        <form method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button class="mt-2 px-4 py-2 bg-sunset text-white rounded-full text-sm font-semibold">Submit review</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

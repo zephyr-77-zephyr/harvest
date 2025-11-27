@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Login | Harvest Helper{% endblock %}
+
+{% block content %}
+  <div class="max-w-md mx-auto bg-white rounded-3xl shadow p-8">
+    <h1 class="text-3xl font-bold text-soil mb-6">Welcome back</h1>
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="w-full px-4 py-3 bg-soil text-white rounded-full font-semibold">Sign in</button>
+    </form>
+    <p class="text-center text-sm text-gray-500 mt-4">
+      Need an account?
+      <a href="{% url 'signup' %}" class="text-sunset font-semibold">Sign up</a>
+    </p>
+    <p class="text-center text-sm text-gray-500 mt-2">
+      <a href="{% url 'password_reset' %}" class="text-sunset font-semibold">Forgot password?</a>
+    </p>
+  </div>
+{% endblock %}
+
