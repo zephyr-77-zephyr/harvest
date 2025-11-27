@@ -77,19 +77,18 @@ WSGI_APPLICATION = 'harvest_helper.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='harvest_helper'),
-        'USER': config('DB_USER', default='postgres'),
-        'PASSWORD': config('DB_PASSWORD', default=''),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
-    }
-}
+import dj_database_url
 
-# Fallback to SQLite for local development
-if not config('DATABASE_URL', default=''):
+# Try to get DATABASE_URL from environment
+database_url = config('DATABASE_URL', default='')
+
+if database_url:
+    # Use Render PostgreSQL database
+    DATABASES = {
+        'default': dj_database_url.parse(database_url)
+    }
+else:
+    # Fallback to SQLite for local development
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
